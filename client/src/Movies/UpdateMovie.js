@@ -1,6 +1,4 @@
 import React, { useState, useEffect, setState } from "react";
-import Nav from "./Nav";
-import { axiosWithAuth } from "../utils/axiosWithAuth";
 import axios from "axios";
 import { useParams, useHistory } from "react-router-dom";
 function UpdateMovie(props) {
@@ -8,14 +6,14 @@ function UpdateMovie(props) {
     title: "",
     director: "",
     metascore: "",
-    stars: "",
+    stars: [],
   });
 
   const [movie, setMovie] = useState(initialState);
   const { push } = useHistory();
   const { id } = useParams();
   useEffect(() => {
-    axiosWithAuth()
+    axios
       .get(`http://localhost:5000/api/movies/${id}`)
       .then((res) => {
         console.log(res);
@@ -38,7 +36,19 @@ function UpdateMovie(props) {
     e.persist();
     setMovie({ ...movie, [e.target.name]: e.target.value });
   };
+  const star = (index) => (e) => {
+    setMovie({
+      ...movie,
+      stars: movie.stars.map((star, starIndex) => {
+        return starIndex === index ? e.target.value : star;
+      }),
+    });
+  };
 
+  const addStar = (e) => {
+    e.preventDefault();
+    setMovie({ ...movie, stars: [movie.stars, ""] });
+  };
   return (
     <form onSubmit={update}>
       <input
@@ -62,19 +72,22 @@ function UpdateMovie(props) {
         value={movie.metascore}
         onChange={handleChanges}
       />
-
-      <input
-        type="text"
-        name="stars"
-        placeholder="stars"
-        value={movie.stars}
-        onChange={handleChanges}
-      />
-
+      {movie.stars.map((starName, index) => {
+        return (
+          <input
+            type="text"
+            name="stars"
+            placeholder="stars"
+            value={starName}
+            onChange={star(index)}
+          />
+        );
+      })}
+      <button onClick={addStar}>add star</button>
       <button type="submit" onClick={update}>
         submit
       </button>
     </form>
   );
 }
-export default EditFriendForm;
+export default UpdateMovie;

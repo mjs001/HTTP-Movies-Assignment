@@ -1,18 +1,6 @@
 import React, { setState } from "react";
-import axios from "axios";
-const MovieCard = (props, state) => {
+const MovieCard = (props) => {
   const { title, director, metascore, stars } = props.movie;
-  const DeleteMovie = () => {
-    axios
-      .delete(`http://localhost:5000/api/movies/${props.movie.id}`)
-      .then((res) => {
-        console.log(res);
-        const newMovie = Object.values(props.movie).filter((m) => {
-          return `${m.id}` !== res.data;
-        });
-        props.setMovie(newMovie);
-      });
-  };
 
   return (
     <>
@@ -32,9 +20,6 @@ const MovieCard = (props, state) => {
           </div>
         ))}
       </div>
-
-      <button onClick={UpdateMovie(movie.id)}>edit</button>
-      <button onClick={DeleteMovie(props.movie.id)}>X</button>
     </>
   );
 };
