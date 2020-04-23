@@ -1,13 +1,14 @@
 import React, { useState, useEffect, setState } from "react";
 import axios from "axios";
 import { useParams, useHistory } from "react-router-dom";
+import MovieList from "./MovieList";
 function UpdateMovie(props) {
-  const initialState = useState({
+  const initialState = {
     title: "",
     director: "",
     metascore: "",
     stars: [],
-  });
+  };
 
   const [movie, setMovie] = useState(initialState);
   const { push } = useHistory();
@@ -17,20 +18,21 @@ function UpdateMovie(props) {
       .get(`http://localhost:5000/api/movies/${id}`)
       .then((res) => {
         console.log(res);
-        setMovie({
-          title: res.data.title,
-          director: res.data.director,
-          metascore: res.data.metascore,
-          stars: escape.data.stars,
-        });
+        setMovie(res.data);
       })
       .catch((err) => console.log(err));
-  }, [id]);
+  }, []);
+
   const update = (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:5000/api/movies/${id}`, movie).then((res) => {
-      push("/");
-    });
+    axios
+      .put(`http://localhost:5000/api/movies/${movie.id}`, movie)
+      .then((res) => {
+        setMovie(res.data);
+        setTimeout(() => {
+          props.history.push("/");
+        }, 2000);
+      });
   };
   const handleChanges = (e) => {
     e.persist();
@@ -72,6 +74,7 @@ function UpdateMovie(props) {
         value={movie.metascore}
         onChange={handleChanges}
       />
+
       {movie.stars.map((starName, index) => {
         return (
           <input
